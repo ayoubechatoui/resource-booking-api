@@ -1,0 +1,11 @@
+# Java / Maven : fichiers générés par la compilation
+target/
+
+# Éditeurs
+.idea/
+.vscode/
+*.iml
+
+# Secrets : ne jamais les envoyer sur GitHub
+.env
+*.pem
