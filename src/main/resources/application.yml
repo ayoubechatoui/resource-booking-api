@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: resource-booking-api
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
