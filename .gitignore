@@ -9,3 +9,5 @@ target/
 # Secrets : ne jamais les envoyer sur GitHub
 .env
 *.pem
+
+application-local.yml
