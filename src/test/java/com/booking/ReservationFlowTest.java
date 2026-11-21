@@ -75,6 +75,13 @@ class ReservationFlowTest {
                         .value("Le mot de passe doit faire entre 8 et 72 caractères"));
     }
 
+    @Test
+    void laDocumentationEstPublique() throws Exception {
+        mvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.info.title").value("Resource Booking API"));
+    }
+
     // --- Petites méthodes d'aide, pour garder les tests lisibles ---
 
     private String registerAndLogin(String email) throws Exception {
