@@ -72,4 +72,43 @@ public class ReservationService {
                 .map(ReservationResponse::from)
                 .toList();
     }
+
+    @Transactional
+    public ReservationResponse validate(Long id) {
+        return decide(id, ReservationStatus.VALIDEE);
+    }
+
+    @Transactional
+    public ReservationResponse refuse(Long id) {
+        return decide(id, ReservationStatus.REFUSEE);
+    }
+
+    @Transactional
+    public void cancel(Long id, String email) {
+        Reservation reservation = find(id);
+        // R7 : on n'annule que ses propres réservations
+        if (!reservation.getUser().getEmail().equals(email)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Ce n'est pas votre réservation");
+        }
+        if (!ACTIVE.contains(reservation.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cette réservation est déjà refusée ou annulée");
+        }
+        reservation.setStatus(ReservationStatus.ANNULEE);
+    }
+
+    // R6 : seule une réservation en attente peut être validée ou refusée
+    private ReservationResponse decide(Long id, ReservationStatus newStatus) {
+        Reservation reservation = find(id);
+        if (reservation.getStatus() != ReservationStatus.EN_ATTENTE) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Seule une réservation en attente peut être validée ou refusée");
+        }
+        reservation.setStatus(newStatus);
+        return ReservationResponse.from(reservation);
+    }
+
+    private Reservation find(Long id) {
+        return reservationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation introuvable"));
+    }
 }
