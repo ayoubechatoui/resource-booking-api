@@ -64,6 +64,17 @@ class ReservationFlowTest {
                 .andExpect(jsonPath("$.status").value("VALIDEE"));
     }
 
+    @Test
+    void desDonneesInvalidesSontExpliqueesChampParChamp() throws Exception {
+        mvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(credentials("pasunemail", "court")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.email").value("L'email n'est pas valide"))
+                .andExpect(jsonPath("$.errors.password")
+                        .value("Le mot de passe doit faire entre 8 et 72 caractères"));
+    }
+
     // --- Petites méthodes d'aide, pour garder les tests lisibles ---
 
     private String registerAndLogin(String email) throws Exception {

@@ -16,16 +16,25 @@ public final class Dtos {
     }
 
     public record AuthRequest(
-            @NotBlank @Email String email,
-            @NotBlank @Size(min = 8, max = 72) String password) {
+            @NotBlank(message = "L'email est obligatoire")
+            @Email(message = "L'email n'est pas valide")
+            String email,
+
+            @NotBlank(message = "Le mot de passe est obligatoire")
+            @Size(min = 8, max = 72, message = "Le mot de passe doit faire entre 8 et 72 caractères")
+            String password) {
     }
 
     public record TokenResponse(String token) {
     }
 
     public record ResourceRequest(
-            @NotBlank @Size(max = 100) String name,
-            @Size(max = 500) String description) {
+            @NotBlank(message = "Le nom est obligatoire")
+            @Size(max = 100, message = "Le nom fait au plus 100 caractères")
+            String name,
+
+            @Size(max = 500, message = "La description fait au plus 500 caractères")
+            String description) {
     }
 
     public record ResourceResponse(Long id, String name, String description) {
@@ -36,9 +45,15 @@ public final class Dtos {
     }
 
     public record ReservationRequest(
-            @NotNull Long resourceId,
-            @NotNull @Future LocalDateTime startTime,
-            @NotNull LocalDateTime endTime) {
+            @NotNull(message = "La machine est obligatoire")
+            Long resourceId,
+
+            @NotNull(message = "Le début est obligatoire")
+            @Future(message = "Le début doit être dans le futur")
+            LocalDateTime startTime,
+
+            @NotNull(message = "La fin est obligatoire")
+            LocalDateTime endTime) {
     }
 
     public record ReservationResponse(
