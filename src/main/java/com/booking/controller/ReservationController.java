@@ -1,5 +1,8 @@
 package com.booking.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import com.booking.dto.Dtos.ReservationRequest;
 import com.booking.dto.Dtos.ReservationResponse;
 import com.booking.service.ReservationService;
@@ -42,4 +45,23 @@ public class ReservationController {
     public List<ReservationResponse> all() {
         return reservationService.listAll();
     }
+
+    @PatchMapping("/{id}/validate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReservationResponse validate(@PathVariable Long id) {
+        return reservationService.validate(id);
+    }
+
+    @PatchMapping("/{id}/refuse")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ReservationResponse refuse(@PathVariable Long id) {
+        return reservationService.refuse(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancel(@PathVariable Long id, Authentication authentication) {
+        reservationService.cancel(id, authentication.getName());
+    }
+
 }
