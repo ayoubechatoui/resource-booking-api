@@ -69,4 +69,34 @@ Dans une équipe qui partage quelques machines chères, les réservations se fon
 Java 21, Spring Boot, Spring Security (JWT), PostgreSQL, Flyway, Docker. Déploiement prévu sur Kubernetes, sur AWS.
 
 
+## Lancer le projet
 
+Le plus simple est Docker : il suffit d'avoir Docker Desktop, pas besoin de Java ni de Maven.
+
+Je crée d'abord un fichier `.env` à la racine (il est ignoré par Git) :
+
+```
+JWT_SECRET=une-cle-d-au-moins-32-caracteres
+ADMIN_PASSWORD=un-mot-de-passe
+```
+
+Puis je lance la base et l'API :
+
+```
+docker compose up -d --build
+```
+
+L'API répond sur http://localhost:8080 et la documentation Swagger est sur
+http://localhost:8080/swagger-ui/index.html. Le compte admin est `admin@booking.local`
+avec le mot de passe mis dans `.env`.
+
+Pour développer sans reconstruire l'image à chaque fois, je lance seulement la base
+avec `docker compose up -d db`, puis l'API avec Maven et le profil `local`
+(le fichier `src/main/resources/application-local.yml` contient les mêmes secrets) :
+
+```
+$env:SPRING_PROFILES_ACTIVE = "local"
+mvn spring-boot:run
+```
+
+Les tests n'ont besoin de rien d'autre : `mvn test` utilise une base H2 en mémoire.
