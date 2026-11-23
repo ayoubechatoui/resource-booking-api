@@ -7,7 +7,7 @@ COPY src ./src
 RUN mvn -B -q package -DskipTests
 
 # Étape 2 : l'image finale, avec seulement Java et le jar
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:24-jre
 WORKDIR /app
 RUN useradd --system --uid 1001 booking
 COPY --from=build /app/target/resource-booking-api.jar app.jar
