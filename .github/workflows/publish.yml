@@ -7,6 +7,7 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 jobs:
   publish:
@@ -44,3 +45,17 @@ jobs:
         run: |
           docker push "$IMAGE:$VERSION"
           docker push "$IMAGE:$SHA_COURT"
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE:$SHA_COURT")
+          echo "DIGEST=${DIGEST}" >> "$GITHUB_ENV"
+
+      - name: Installer cosign
+        uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 
+
+      - name: Signer l'image
+        run: cosign sign --yes "$DIGEST"
+
+      - name: Vérifier la signature
+        run: >
+          cosign verify "$DIGEST"
+          --certificate-identity-regexp "https://github.com/${GITHUB_REPOSITORY}/.github/workflows/publish.yml@.*"
+          --certificate-oidc-issuer https://token.actions.githubusercontent.com
