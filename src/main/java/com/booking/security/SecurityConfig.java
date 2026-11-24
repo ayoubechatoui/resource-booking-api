@@ -19,6 +19,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         http
+                // CSRF désactivé volontairement : l'API est sans état, le JWT est envoyé dans
+                // l'en-tête Authorization (jamais dans un cookie). Le navigateur ne l'ajoute
+                // pas tout seul à une requête venue d'un autre site, donc l'attaque CSRF
+                // ne s'applique pas ici.
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
