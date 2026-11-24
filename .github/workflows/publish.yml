@@ -1,0 +1,46 @@
+name: Publier l'image
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+
+      - name: Installer Java 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Calculer les tags
+        run: |
+          VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY}" >> "$GITHUB_ENV"
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "SHA_COURT=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - name: Se connecter à ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Construire l'image
+        run: >
+          docker build
+          --label org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}
+          -t "$IMAGE:$VERSION"
+          -t "$IMAGE:$SHA_COURT"
+          .
+
+      - name: Publier l'image
+        run: |
+          docker push "$IMAGE:$VERSION"
+          docker push "$IMAGE:$SHA_COURT"
