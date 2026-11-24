@@ -31,7 +31,10 @@ jobs:
           echo "SHA_COURT=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
 
       - name: Se connecter à ghcr.io
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTEUR: ${{ github.actor }}
+        run: echo "$TOKEN" | docker login ghcr.io -u "$ACTEUR" --password-stdin
 
       - name: Construire l'image
         run: >
