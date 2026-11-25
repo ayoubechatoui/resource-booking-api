@@ -93,7 +93,16 @@ cosign verify ghcr.io/ayoubechatoui/resource-booking-api:<tag> \
 
 Java 21, Spring Boot 3, Spring Security (JWT), PostgreSQL, Flyway, Docker, GitHub Actions, SonarQube, CodeQL, gitleaks, cosign, Python (MCP).
 
-Le déploiement prévu ensuite : Kubernetes avec Helm et Argo CD, puis Microsoft Azure (AKS) décrit en Terraform.
+## Ce que je prépare ensuite
+
+Le code et la chaîne de build sont en place. La suite porte sur le déploiement et l'exploitation, et j'ajouterai chaque partie à ce README une fois qu'elle fonctionnera :
+
+1. Les garde-fous du serveur MCP et un test d'injection de prompt.
+2. Un déploiement sur Kubernetes en local (kind) avec un chart Helm, pour un environnement de staging et un de production, et une tâche de nuit qui supprime les vieilles réservations (RGPD).
+3. Un déploiement GitOps avec Argo CD, et Kyverno pour refuser dans le cluster toute image non signée.
+4. Un pipeline Jenkins qui teste l'application en staging (smoke tests, scan OWASP ZAP) avant une validation manuelle pour la production.
+5. La supervision avec Prometheus et Grafana : objectifs de disponibilité (SLO) et alertes.
+6. L'infrastructure Microsoft Azure (AKS, Key Vault) décrite en Terraform.
 
 ## Lancer le projet
 
